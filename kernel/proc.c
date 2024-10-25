@@ -291,6 +291,9 @@ fork(void)
 
   safestrcpy(np->name, p->name, sizeof(p->name));
 
+  //将trace的mask拷贝到子进程
+  np->mask = p->mask;
+
   pid = np->pid;
 
   np->state = RUNNABLE;
@@ -692,4 +695,15 @@ procdump(void)
     printf("%d %s %s", p->pid, state, p->name);
     printf("\n");
   }
+}
+
+uint64 unusedproc(void){
+  struct proc *p;
+  uint64 unused = 0;
+
+  for(p = proc; p < &proc[NPROC]; p++){
+    if(p->state != UNUSED) unused++;
+  }
+
+  return unused;
 }
