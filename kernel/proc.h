@@ -103,4 +103,12 @@ struct proc {
   struct file *ofile[NOFILE];  // Open files
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
+
+  int ticks;
+  int ticks_cnt;
+  uint64 handler;
+  int handler_exec;           // 判斷handler是否在執行
+  uint64 tick_epc;
+
+  struct trapframe tick_trampframe;    // 為了周期特性保存的trapframe
 };
