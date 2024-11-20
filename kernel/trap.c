@@ -67,6 +67,20 @@ usertrap(void)
     syscall();
   } else if((which_dev = devintr()) != 0){
     // ok
+  } else if(r_scause() == 13 || r_scause() == 15){
+    // 页面错误
+    uint64 va = r_stval();
+    // 如果是由于懒分配造成的页面错误
+    if(is_lazy_alloc_va(va)){
+      if(lazy_alloc(va) < 0){
+        // 发生了错误
+        printf("lazy alloc fail!\n");
+        p->killed = 1;
+      }
+    }else{
+      // printf("用戶進程正在試圖訪問非法地址\n");
+      p->killed = 1;
+    }
   } else {
     printf("usertrap(): unexpected scause %p pid=%d\n", r_scause(), p->pid);
     printf("            sepc=%p stval=%p\n", r_sepc(), r_stval());
